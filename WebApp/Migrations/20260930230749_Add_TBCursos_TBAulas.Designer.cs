@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EscolaDeCursos.WebApp.Migrations
 {
     [DbContext(typeof(EscolaDeCursosDbContext))]
-    [Migration("20260930175607_Add_TBAlunos")]
-    partial class Add_TBAlunos
+    [Migration("20260930230749_Add_TBCursos_TBAulas")]
+    partial class Add_TBCursos_TBAulas
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -53,6 +53,58 @@ namespace EscolaDeCursos.WebApp.Migrations
                     b.ToTable("TBAlunos", (string)null);
                 });
 
+            modelBuilder.Entity("EscolaDeCursos.WebApp.Modulos.ModuloCurso.Dominio.Aula", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CursoId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("DuracaoEmMinutos")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Ordem")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CursoId", "Nome")
+                        .IsUnique();
+
+                    b.HasIndex("CursoId", "Ordem")
+                        .IsUnique();
+
+                    b.ToTable("TBAulas", (string)null);
+                });
+
+            modelBuilder.Entity("EscolaDeCursos.WebApp.Modulos.ModuloCurso.Dominio.Curso", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("CargaHoraria")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Nivel")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TBCursos", (string)null);
+                });
+
             modelBuilder.Entity("EscolaDeCursos.WebApp.Modulos.ModuloInstrutor.Dominio.Instrutor", b =>
                 {
                     b.Property<Guid>("Id")
@@ -82,6 +134,23 @@ namespace EscolaDeCursos.WebApp.Migrations
                         .IsUnique();
 
                     b.ToTable("TBInstrutores", (string)null);
+                });
+
+            modelBuilder.Entity("EscolaDeCursos.WebApp.Modulos.ModuloCurso.Dominio.Aula", b =>
+                {
+                    b.HasOne("EscolaDeCursos.WebApp.Modulos.ModuloCurso.Dominio.Curso", "Curso")
+                        .WithMany("Aulas")
+                        .HasForeignKey("CursoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_TBAulas_TBCurso");
+
+                    b.Navigation("Curso");
+                });
+
+            modelBuilder.Entity("EscolaDeCursos.WebApp.Modulos.ModuloCurso.Dominio.Curso", b =>
+                {
+                    b.Navigation("Aulas");
                 });
 #pragma warning restore 612, 618
         }

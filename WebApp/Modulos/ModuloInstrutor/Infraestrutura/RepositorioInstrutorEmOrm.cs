@@ -1,5 +1,6 @@
 namespace EscolaDeCursos.WebApp.Modulos.ModuloInstrutor.Infraestrutura;
 
+using EscolaDeCursos.WebApp.Compartilhado.Infraestrutura.Orm;
 using EscolaDeCursos.WebApp.Modulos.ModuloInstrutor.Dominio;
 
 public sealed class RepositorioInstrutorEmOrm : IRepositorioInstrutor
@@ -45,7 +46,10 @@ public sealed class RepositorioInstrutorEmOrm : IRepositorioInstrutor
 
     public bool ExisteComNome(string nome, Guid? idIgnorado = null)
     {
-        throw new NotImplementedException();
+        return dbContext.Instrutores.Any(i =>
+           i.Id != idIgnorado &&
+           i.Nome.Trim() == nome.Trim()
+       );
     }
 
     public Instrutor? SelecionarPorId(Guid idSelecionado)

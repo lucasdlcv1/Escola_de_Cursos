@@ -1,5 +1,6 @@
 using System;
 using EscolaDeCursos.WebApp.Compartilhado.Dominio;
+using EscolaDeCursos.WebApp.Compartilhado.Infraestrutura.Orm;
 using EscolaDeCursos.WebApp.Modulos.ModuloAluno.Dominio;
 
 namespace EscolaDeCursos.WebApp.Modulos.ModuloAluno.Infraestrutura;
