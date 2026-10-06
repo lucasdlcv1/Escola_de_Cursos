@@ -35,6 +35,36 @@ jobs:
           name: .net-app
           path: ${{env.DOTNET_ROOT}}/myapp
 
+  migrate:
+      runs-on: windows-latest
+      needs: build
+      permissions:
+        contents: read
+
+      steps:
+        - uses: actions/checkout@v4
+
+        - name: Set up .NET Core
+          uses: actions/setup-dotnet@v4
+          with:
+            dotnet-version: "10.x"
+
+        - name: Restore dependecies
+          run: dotnet restore WebApp/EscolaDeCursos.WebApp.csproj
+
+        - name: Install Entity Framework CLI
+          run: dotnet tool install --global dotnet-ef
+
+        - name: Apply ORM Migrations
+          env:
+            SQLSERVER_CONECTIONSTRING: ${{ secrets.SQLSERVER_CONECTIONSTRING}}
+          run: |
+            dotnet ef database update `
+            --project "WebApp/EscolaDeCursos.WebApp.csproj" `
+            --configuration Release `
+            --connection "$env:SQLSERVER_CONECTIONSTRING"
+
+
   deploy:
     runs-on: windows-latest
     needs: build
@@ -47,7 +77,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: .net-app
-      
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -62,4 +92,3 @@ jobs:
           app-name: 'EscoladeCursos26'
           slot-name: 'Production'
           package: .
-          
