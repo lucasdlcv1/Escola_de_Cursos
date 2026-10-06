@@ -5,6 +5,8 @@ using EscolaDeCursos.WebApp.Modulos.ModuloAluno.Dominio;
 using EscolaDeCursos.WebApp.Modulos.ModuloAluno.Infraestrutura;
 using EscolaDeCursos.WebApp.Modulos.ModuloCurso.Dominio;
 using EscolaDeCursos.WebApp.Modulos.ModuloCurso.Infraestrutura;
+using EscolaDeCursos.WebApp.Modulos.ModuloMatricula.Dominio;
+using EscolaDeCursos.WebApp.Modulos.ModuloTurma.Dominio;
 
 namespace EscolaDeCursos.WebApp.Compartilhado.Infraestrutura.Orm;
 
@@ -14,6 +16,10 @@ public sealed class EscolaDeCursosDbContext : DbContext
     public DbSet<Aluno> Alunos => Set<Aluno>();
     public DbSet<Curso> Cursos => Set<Curso>();
     public DbSet<Aula> Aulas => Set<Aula>();
+
+    public DbSet<Matricula> Matriculas => Set<Matricula>();
+
+    public DbSet<Turma> Turmas => Set<Turma>();
 
     public EscolaDeCursosDbContext(DbContextOptions<EscolaDeCursosDbContext> options)
         : base(options)

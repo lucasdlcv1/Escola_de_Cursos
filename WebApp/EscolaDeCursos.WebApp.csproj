@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <None Include="Modulos\ModuloCurso\Infraestrutura\RepositorioCursoEmArquivo.cs" />
+    <None Include="Modulos\ModuloTurma\Infraestrutura\RepositorioTurmaEmOrm.cs" />
   </ItemGroup>
 
 </Project>
