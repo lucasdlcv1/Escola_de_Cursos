@@ -53,7 +53,7 @@ jobs:
         run: dotnet restore WebApp/EscolaDeCursos.WebApp.csproj
 
       - name: Install Entity Framework CLI
-        run: dotnet tool install --global donet-ef
+        run: dotnet tool install --global dotnet-ef
 
       - name: Apply ORM Migrations
         env:
