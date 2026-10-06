@@ -18,23 +18,21 @@ public static class InjecaoDependencia
 {
     public static void AddInfraRepositories(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddSingleton<ContextoJson>(_ =>
-        {
-            ContextoJson contexto = new();
-            contexto.Carregar();
-            return contexto;
-        });
 
         services.AddDbContext<EscolaDeCursosDbContext>(options =>
         {
-            string? connectionString = configuration.GetConnectionString("SqlServerDocker");
+            string? connectionString = configuration.GetConnectionString("SqlServer");
 
             if (string.IsNullOrWhiteSpace(connectionString))
             {
-                throw new InvalidOperationException("Connection string 'SqlServerDocker' not found.");
+                throw new InvalidOperationException("Connection string 'SqlServer' not found.");
             }
 
-            options.UseSqlServer(connectionString);
+            options.UseSqlServer(connectionString, config =>
+            {
+                config.EnableRetryOnFailure();
+            })
+            ;
         }
         );
 
