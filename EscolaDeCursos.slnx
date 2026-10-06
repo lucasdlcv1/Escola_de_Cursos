@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="../eAgenda/eAgenda/eAgenda.csproj" />
   <Project Path="WebApp/EscolaDeCursos.WebApp.csproj" />
 </Solution>
