@@ -100,5 +100,6 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'EscoladeCursos26'
+          resource-group-name: 'EscolaDeCursos26'
           slot-name: 'Production'
           package: .
