@@ -69,8 +69,7 @@ jobs:
     runs-on: windows-latest
     needs: [build, migrate]
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+      contents: read
 
     steps:
       - name: Download artifact from build job
@@ -78,28 +77,12 @@ jobs:
         with:
           name: .net-app
 
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_056F04C40E4642DF85705B1B801845E2 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_A646626578F742F3B7D913986124FAAF }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_97CCBD0C287C439CAF53D9DAA608DD50 }}
-
-      - name: Configure Azure Web App settings
-        shell: pwsh
-        run: |
-          az webapp config appsettings set `
-            --resource-group "EscolaDeCursos26" `
-            --name "EscoladeCursos26" `
-            --settings `
-              "ConnectionStrings__SqlServer=${{ secrets.SQLSERVER_CONNECTIONSTRING }}"
-
-
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'EscoladeCursos26'
-          resource-group-name: 'EscolaDeCursos26' #Linha nova
+          resource-group-name: 'EscolaDeCursos26'
           slot-name: 'Production'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: .
