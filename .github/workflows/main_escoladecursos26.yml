@@ -1,12 +1,12 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy ASP.Net Core app to Azure Web App - EscoladeCursos26
+name: Build and deploy ASP.Net Core app to Azure Web App - escola-de-cursos-backend-2026
 
 on:
   push:
     branches:
-      - 'main'
+      - main
   workflow_dispatch:
 
 jobs:
@@ -21,7 +21,7 @@ jobs:
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.x'
+          dotnet-version: "10.x"
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
@@ -36,38 +36,37 @@ jobs:
           path: ${{env.DOTNET_ROOT}}/myapp
 
   migrate:
-      runs-on: windows-latest
-      needs: build
-      permissions:
-        contents: read
+    runs-on: windows-latest
+    needs: build
+    permissions:
+      contents: read
 
-      steps:
-        - uses: actions/checkout@v4
+    steps:
+      - uses: actions/checkout@v4
 
-        - name: Set up .NET Core
-          uses: actions/setup-dotnet@v4
-          with:
-            dotnet-version: "10.x"
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.x"
 
-        - name: Restore dependecies
-          run: dotnet restore WebApp/EscolaDeCursos.WebApp.csproj
+      - name: Restore dependencies
+        run: dotnet restore WebApp/EscolaDeCursos.WebApp.csproj
 
-        - name: Install Entity Framework CLI
-          run: dotnet tool install --global dotnet-ef
+      - name: Install Entity Framework CLI
+        run: dotnet tool install --global dotnet-ef
 
-        - name: Apply ORM Migrations
-          env:
-            SQLSERVER_CONNECTIONSTRING: ${{ secrets.SQLSERVER_CONNECTIONSTRING}}
-          run: |
-            dotnet ef database update `
+      - name: Apply ORM Migrations
+        env:
+          SQLSERVER_CONNECTIONSTRING: ${{ secrets.SQLSERVER_CONNECTIONSTRING }}
+        run: |
+          dotnet ef database update `
             --project "WebApp/EscolaDeCursos.WebApp.csproj" `
             --configuration Release `
             --connection "$env:SQLSERVER_CONNECTIONSTRING"
 
-
   deploy:
     runs-on: windows-latest
-    needs: build
+    needs: [build, migrate]
     permissions:
       id-token: write #This is required for requesting the JWT
       contents: read #This is required for actions/checkout
@@ -81,24 +80,23 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_056F04C40E4642DF85705B1B801845E2 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_A646626578F742F3B7D913986124FAAF }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_97CCBD0C287C439CAF53D9DAA608DD50 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_EDFDBFC844484BA199252B9B2A1D7FD3 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_54A36A75A8EA4100A250C5A3FD5E8FD4 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_E768C7C893EE4F968884C3190716B3E9 }}
 
       - name: Configure Azure Web App settings
         shell: pwsh
         run: |
           az webapp config appsettings set `
-            --resource-group "EscolaDeCursos26" `
-            --name "EscoladeCursos26" `
+            --resource-group "escola-de-cursos-backend" `
+            --name "escola-de-cursos-backend-2026" `
             --settings `
               "ConnectionStrings__SqlServer=${{ secrets.SQLSERVER_CONNECTIONSTRING }}"
-
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'EscoladeCursos26'
-          slot-name: 'Production'
+          app-name: "escola-de-cursos-backend-2026"
+          slot-name: "Production"
           package: .
