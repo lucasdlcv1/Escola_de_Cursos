@@ -57,12 +57,12 @@ jobs:
 
         - name: Apply ORM Migrations
           env:
-            SQLSERVER_CONECTIONSTRING: ${{ secrets.SQLSERVER_CONECTIONSTRING}}
+            SQLSERVER_CONNECTIONSTRING: ${{ secrets.SQLSERVER_CONNECTIONSTRING}}
           run: |
             dotnet ef database update `
             --project "WebApp/EscolaDeCursos.WebApp.csproj" `
             --configuration Release `
-            --connection "$env:SQLSERVER_CONECTIONSTRING"
+            --connection "$env:SQLSERVER_CONNECTIONSTRING"
 
 
   deploy:
