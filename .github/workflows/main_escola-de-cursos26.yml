@@ -35,9 +35,39 @@ jobs:
           name: .net-app
           path: ${{env.DOTNET_ROOT}}/myapp
 
-  deploy:
+      migrate:
     runs-on: windows-latest
     needs: build
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.x"
+
+      - name: Restore dependencies
+        run: dotnet restore WebApp/EscolaDeCursos.WebApp.csproj
+
+      - name: Install Entity Framework CLI
+        run: dotnet tool install --global dotnet-ef
+
+      - name: Apply ORM Migrations
+        env:
+          SQLSERVER_CONNECTIONSTRING: ${{ secrets.SQLSERVER_CONNECTIONSTRING }}
+        run: |
+          dotnet ef database update `
+            --project "WebApp/EscolaDeCursos.WebApp.csproj" `
+            --configuration Release `
+            --connection "$env:SQLSERVER_CONNECTIONSTRING"
+
+
+  deploy:
+    runs-on: windows-latest
+    needs: [build, migrate]
     permissions:
       id-token: write #This is required for requesting the JWT
       contents: read #This is required for actions/checkout
@@ -47,13 +77,24 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: .net-app
-      
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_0503D0806EB94D8DB0FDB8D576918AE1 }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_F365D075BE7E4AEDB2F573C06CE2F5A4 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_630899643F8B4EFABB17DBD1EC8B54A3 }}
+
+      - name: Configure Azure Web App settings
+        shell: pwsh
+        run: |
+          az webapp config appsettings set `
+            --resource-group "Escola-de-cursos-2026" `
+            --name "Escola-de-cursos26" `
+            --settings `
+              "ConnectionStrings__SqlServer=${{ secrets.SQLSERVER_CONNECTIONSTRING }}"
+
+
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -62,4 +103,3 @@ jobs:
           app-name: 'Escola-de-cursos26'
           slot-name: 'Production'
           package: .
-          
